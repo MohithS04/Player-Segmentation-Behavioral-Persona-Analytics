@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Segmentation - Segment Overview Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a35;
+            --bg-card: #252548;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #06b6d4;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-meta {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .kpi-value.revenue {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .persona-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tier-whale { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a35; }
+        .tier-dolphin { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tier-minnow { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .tier-free { background: rgba(255,255,255,0.1); color: var(--text-muted); }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 2rem;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="header">
+            <h1>🎮 Player Segmentation Analytics</h1>
+            <div class="header-meta">
+                <span id="lastUpdated">Loading...</span>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <a href="segment_overview.html" class="nav-tab active">Overview</a>
+            <a href="persona_deepdive.html" class="nav-tab">Persona Deep-Dive</a>
+            <a href="performance_comparison.html" class="nav-tab">Performance</a>
+        </nav>
+
+        <section class="kpi-grid" id="kpiGrid">
+            <div class="loading">Loading KPIs...</div>
+        </section>
+
+        <section class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Persona Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="personaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">💰 Revenue by Monetization Tier</h3>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">⚡ Engagement Levels</h3>
+                <div class="chart-container">
+                    <canvas id="engagementChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">📱 Platform Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card full-width">
+                <h3 class="chart-title">🎯 RFM Segment Overview</h3>
+                <div class="table-container">
+                    <table id="rfmTable">
+                        <thead>
+                            <tr>
+                                <th>Segment</th>
+                                <th>Players</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rfmTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Player Segmentation & Behavioral Persona Analytics | Built for Gaming Industry Analytics</p>
+        </footer>
+    </div>
+
+    <script>
+        const COLORS = {
+            primary: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd'],
+            secondary: ['#06b6d4', '#0ea5e9', '#38bdf8', '#7dd3fc'],
+            accent: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'],
+            success: ['#22c55e', '#4ade80', '#86efac', '#bbf7d0'],
+            rainbow: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#6366f1', '#a855f7']
+        };
+
+        async function loadData() {
+            try {
+                const response = await fetch('assets/segment_overview.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return null;
+            }
+        }
+
+        function renderKPIs(kpi) {
+            const grid = document.getElementById('kpiGrid');
+            grid.innerHTML = `
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Players</div>
+                    <div class="kpi-value">${kpi.totalPlayers.toLocaleString()}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Active Players</div>
+                    <div class="kpi-value">${kpi.activePlayers.toLocaleString()}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value revenue">$${kpi.totalRevenue.toLocaleString()}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average LTV</div>
+                    <div class="kpi-value">$${kpi.avgLtv}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg Playtime</div>
+                    <div class="kpi-value">${kpi.avgPlaytime}h</div>
+                </div>
+            `;
+        }
+
+        function renderPersonaChart(personas) {
+            const ctx = document.getElementById('personaChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: personas.map(p => p.name),
+                    datasets: [{
+                        data: personas.map(p => p.count),
+                        backgroundColor: COLORS.rainbow,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#a1a1aa', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRevenueChart(monetization) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monetization.map(m => m.tier),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: monetization.map(m => m.revenue),
+                        backgroundColor: COLORS.accent[0],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#71717a', callback: v => '$' + v.toLocaleString() },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: {
+                            ticks: { color: '#a1a1aa' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderEngagementChart(engagement) {
+            const ctx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: engagement.map(e => e.level),
+                    datasets: [{
+                        data: engagement.map(e => e.count),
+                        backgroundColor: COLORS.secondary,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#a1a1aa', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPlatformChart(platforms) {
+            const ctx = document.getElementById('platformChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: platforms.map(p => p.platform),
+                    datasets: [
+                        {
+                            label: 'Players',
+                            data: platforms.map(p => p.count),
+                            backgroundColor: COLORS.primary[0],
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#71717a' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: {
+                            ticks: { color: '#a1a1aa' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRFMTable(rfm) {
+            const tbody = document.getElementById('rfmTableBody');
+            const priorityColors = {
+                'Critical': 'var(--danger)',
+                'High': 'var(--warning)',
+                'Medium': 'var(--accent-tertiary)',
+                'Standard': 'var(--text-muted)'
+            };
+
+            tbody.innerHTML = rfm.slice(0, 10).map(r => `
+                <tr>
+                    <td><strong>${r.segment}</strong></td>
+                    <td>${r.count.toLocaleString()}</td>
+                    <td style="color: ${priorityColors[r.priority] || 'inherit'}">${r.priority}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function init() {
+            const data = await loadData();
+            if (!data) {
+                document.getElementById('kpiGrid').innerHTML = '<div class="loading">Failed to load data</div>';
+                return;
+            }
+
+            document.getElementById('lastUpdated').textContent = 
+                'Updated: ' + new Date(data.generatedAt).toLocaleDateString();
+
+            renderKPIs(data.kpi);
+            renderPersonaChart(data.personas);
+            renderRevenueChart(data.monetization);
+            renderEngagementChart(data.engagement);
+            renderPlatformChart(data.platforms);
+            renderRFMTable(data.rfm);
+        }
+
+        init();
+    </script>
+</body>
+</html>

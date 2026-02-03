@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Segmentation - Persona Deep-Dive</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a35;
+            --bg-card: #252548;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #06b6d4;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+        }
+
+        .persona-selector {
+            margin-bottom: 2rem;
+        }
+
+        .persona-selector label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .persona-selector select {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            min-width: 300px;
+            cursor: pointer;
+        }
+
+        .persona-selector select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .persona-header {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .persona-icon {
+            font-size: 6rem;
+            text-align: center;
+        }
+
+        .persona-info h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .persona-info p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-tertiary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .persona-header {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            height: 280px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+        }
+
+        .insight-card h3 {
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .insight-list {
+            list-style: none;
+        }
+
+        .insight-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-list li::before {
+            content: '💡';
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <header class="header">
+            <h1>🎮 Persona Deep-Dive</h1>
+        </header>
+
+        <nav class="nav-tabs">
+            <a href="segment_overview.html" class="nav-tab">Overview</a>
+            <a href="persona_deepdive.html" class="nav-tab active">Persona Deep-Dive</a>
+            <a href="performance_comparison.html" class="nav-tab">Performance</a>
+        </nav>
+
+        <div class="persona-selector">
+            <label for="personaSelect">Select Persona to Analyze:</label>
+            <select id="personaSelect" onchange="updatePersona()">
+                <option value="">Loading personas...</option>
+            </select>
+        </div>
+
+        <div class="persona-header" id="personaHeader">
+            <div class="persona-icon">🎯</div>
+            <div class="persona-info">
+                <h2 id="personaName">Select a Persona</h2>
+                <p id="personaDescription">Choose a persona from the dropdown to see detailed analytics</p>
+                <div class="stats-row" id="statsRow"></div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">📱 Platform Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">🎮 Favorite Game Modes</h3>
+                <div class="chart-container">
+                    <canvas id="gameModeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Key Metrics Radar</h3>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">💰 Revenue Contribution</h3>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-card" id="insightsCard">
+            <h3>🎯 Persona Insights & Recommendations</h3>
+            <ul class="insight-list" id="insightsList"></ul>
+        </div>
+
+        <footer class="footer">
+            <p>Player Segmentation & Behavioral Persona Analytics</p>
+        </footer>
+    </div>
+
+    <script>
+        let personaData = null;
+        let charts = {};
+
+        const PERSONA_ICONS = {
+            'Whale Walter': '🐋',
+            'Competitive Carl': '⚔️',
+            'Social Sara': '👥',
+            'Collector Chris': '🏆',
+            'Casual Casey': '📱',
+            'Explorer Emma': '🗺️',
+            'Weekend Warrior Will': '⏰'
+        };
+
+        const PERSONA_DESCRIPTIONS = {
+            'Whale Walter': 'High spender who seeks competitive advantage and premium content.',
+            'Competitive Carl': 'Hardcore PvP player with high engagement and skill focus.',
+            'Social Sara': 'Plays to connect with friends, community-driven engagement.',
+            'Collector Chris': 'Achievement hunter and completionist, loves cosmetics.',
+            'Casual Casey': 'Mobile player with short sessions, light engagement.',
+            'Explorer Emma': 'Story-driven player who explores all content thoroughly.',
+            'Weekend Warrior Will': 'Limited time gamer with intense weekend sessions.'
+        };
+
+        async function loadData() {
+            try {
+                const response = await fetch('assets/persona_deepdive.json');
+                personaData = await response.json();
+                populateSelector();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function populateSelector() {
+            const select = document.getElementById('personaSelect');
+            const personas = Object.keys(personaData.personas);
+            select.innerHTML = personas.map(p =>
+                `<option value="${p}">${PERSONA_ICONS[p] || '🎮'} ${p}</option>`
+            ).join('');
+            updatePersona();
+        }
+
+        function updatePersona() {
+            const persona = document.getElementById('personaSelect').value;
+            if (!persona || !personaData) return;
+
+            const data = personaData.personas[persona];
+
+            // Update header
+            document.getElementById('personaName').textContent = persona;
+            document.querySelector('.persona-icon').textContent = PERSONA_ICONS[persona] || '🎮';
+            document.getElementById('personaDescription').textContent =
+                PERSONA_DESCRIPTIONS[persona] || 'Detailed analytics for this player segment.';
+
+            // Update stats
+            document.getElementById('statsRow').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${data.population.toLocaleString()}</div>
+                    <div class="stat-label">Players</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">$${data.avgLtv}</div>
+                    <div class="stat-label">Avg LTV</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.avgPlaytime}h</div>
+                    <div class="stat-label">Avg Playtime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.avgSession}m</div>
+                    <div class="stat-label">Avg Session</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.pvpPct}%</div>
+                    <div class="stat-label">PvP Focus</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">$${data.totalRevenue.toLocaleString()}</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            `;
+
+            renderCharts(data);
+            renderInsights(persona, data);
+        }
+
+        function renderCharts(data) {
+            const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b'];
+
+            // Platform Chart
+            if (charts.platform) charts.platform.destroy();
+            charts.platform = new Chart(document.getElementById('platformChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.platforms.map(p => p.platform),
+                    datasets: [{
+                        data: data.platforms.map(p => p.count),
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+
+            // Game Mode Chart
+            if (charts.gameMode) charts.gameMode.destroy();
+            charts.gameMode = new Chart(document.getElementById('gameModeChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.gameModes.map(g => g.mode),
+                    datasets: [{
+                        data: data.gameModes.map(g => g.count),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#71717a' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#a1a1aa' }, grid: { display: false } }
+                    }
+                }
+            });
+
+            // Radar Chart
+            if (charts.radar) charts.radar.destroy();
+            charts.radar = new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Playtime', 'Spending', 'Session Length', 'PvP Focus', 'Social Score'],
+                    datasets: [{
+                        label: 'This Persona',
+                        data: [
+                            Math.min(data.avgPlaytime / 200 * 100, 100),
+                            Math.min(data.avgLtv / 1000 * 100, 100),
+                            Math.min(data.avgSession / 120 * 100, 100),
+                            data.pvpPct,
+                            data.socialScore * 10
+                        ],
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: '#6366f1',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#71717a', backdropColor: 'transparent' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#a1a1aa' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Revenue Chart
+            if (charts.revenue) charts.revenue.destroy();
+            const allPersonas = Object.entries(personaData.personas).map(([name, d]) => ({
+                name, revenue: d.totalRevenue
+            })).sort((a, b) => b.revenue - a.revenue);
+
+            charts.revenue = new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: allPersonas.map(p => p.name.split(' ')[0]),
+                    datasets: [{
+                        data: allPersonas.map(p => p.revenue),
+                        backgroundColor: allPersonas.map(p =>
+                            p.name === document.getElementById('personaSelect').value ? '#6366f1' : '#3f3f5a'
+                        ),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            ticks: { color: '#71717a', callback: v => '$' + (v / 1000).toFixed(0) + 'k' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: { ticks: { color: '#a1a1aa' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderInsights(persona, data) {
+            const insights = [];
+
+            if (data.avgLtv > 100) {
+                insights.push(`High-value segment with $${data.avgLtv} average LTV - prioritize retention efforts`);
+            }
+            if (data.pvpPct > 40) {
+                insights.push(`Strong competitive preference (${data.pvpPct}% PvP) - focus on ranked features and esports content`);
+            }
+            if (data.avgSession > 60) {
+                insights.push(`Long session players (${data.avgSession}min avg) - optimize for deep engagement content`);
+            }
+            if (data.socialScore > 5) {
+                insights.push(`High social engagement - leverage community features for retention`);
+            }
+            if (data.avgPlaytime < 20) {
+                insights.push(`Low playtime segment - focus on quick engagement loops and mobile optimization`);
+            }
+            if (data.platforms.find(p => p.platform === 'Mobile' && p.count > data.population * 0.5)) {
+                insights.push(`Predominantly mobile users - ensure mobile-first experience`);
+            }
+
+            document.getElementById('insightsList').innerHTML = insights.length > 0
+                ? insights.map(i => `<li>${i}</li>`).join('')
+                : '<li>Select a persona to see tailored insights</li>';
+        }
+
+        loadData();
+    </script>
+</body>
+
+</html>

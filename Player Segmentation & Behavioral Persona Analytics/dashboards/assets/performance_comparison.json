@@ -1,0 +1,105 @@
+{
+  "personas": [
+    {
+      "name": "Casual Casey",
+      "population": 15566,
+      "playtime": 14.5,
+      "ltv": 2.48,
+      "session": 21.4,
+      "pvp": 25.3,
+      "social": 0.48,
+      "achievements": 40.0
+    },
+    {
+      "name": "Collector Chris",
+      "population": 516,
+      "playtime": 93.2,
+      "ltv": 84.19,
+      "session": 33.4,
+      "pvp": 37.2,
+      "social": 3.54,
+      "achievements": 158.0
+    },
+    {
+      "name": "Competitive Carl",
+      "population": 12920,
+      "playtime": 123.2,
+      "ltv": 9.43,
+      "session": 56.0,
+      "pvp": 52.0,
+      "social": 1.9,
+      "achievements": 131.0
+    },
+    {
+      "name": "Explorer Emma",
+      "population": 18967,
+      "playtime": 29.7,
+      "ltv": 3.25,
+      "session": 28.7,
+      "pvp": 28.9,
+      "social": 0.82,
+      "achievements": 66.0
+    },
+    {
+      "name": "Social Sara",
+      "population": 134,
+      "playtime": 122.0,
+      "ltv": 105.77,
+      "session": 44.0,
+      "pvp": 37.7,
+      "social": 5.87,
+      "achievements": 131.0
+    },
+    {
+      "name": "Weekend Warrior Will",
+      "population": 81,
+      "playtime": 55.5,
+      "ltv": 3.17,
+      "session": 51.2,
+      "pvp": 31.4,
+      "social": 1.49,
+      "achievements": 17.0
+    },
+    {
+      "name": "Whale Walter",
+      "population": 1816,
+      "playtime": 172.8,
+      "ltv": 997.82,
+      "session": 56.7,
+      "pvp": 48.2,
+      "social": 5.37,
+      "achievements": 176.0
+    }
+  ],
+  "revenue": [
+    {
+      "persona": "Whale Walter",
+      "revenue": 1812035.43
+    },
+    {
+      "persona": "Competitive Carl",
+      "revenue": 121850.18
+    },
+    {
+      "persona": "Explorer Emma",
+      "revenue": 61563.8
+    },
+    {
+      "persona": "Collector Chris",
+      "revenue": 43441.22
+    },
+    {
+      "persona": "Casual Casey",
+      "revenue": 38654.81
+    },
+    {
+      "persona": "Social Sara",
+      "revenue": 14173.65
+    },
+    {
+      "persona": "Weekend Warrior Will",
+      "revenue": 256.47
+    }
+  ],
+  "generatedAt": "2026-02-02T21:04:20.804404"
+}

@@ -1,0 +1,202 @@
+{
+  "personas": [
+    {
+      "name": "Explorer Emma",
+      "count": 18967,
+      "avgLtv": 3.25,
+      "totalLtv": 61563.8
+    },
+    {
+      "name": "Casual Casey",
+      "count": 15566,
+      "avgLtv": 2.48,
+      "totalLtv": 38654.81
+    },
+    {
+      "name": "Competitive Carl",
+      "count": 12920,
+      "avgLtv": 9.43,
+      "totalLtv": 121850.18
+    },
+    {
+      "name": "Whale Walter",
+      "count": 1816,
+      "avgLtv": 997.82,
+      "totalLtv": 1812035.43
+    },
+    {
+      "name": "Collector Chris",
+      "count": 516,
+      "avgLtv": 84.19,
+      "totalLtv": 43441.22
+    },
+    {
+      "name": "Social Sara",
+      "count": 134,
+      "avgLtv": 105.77,
+      "totalLtv": 14173.65
+    },
+    {
+      "name": "Weekend Warrior Will",
+      "count": 81,
+      "avgLtv": 3.17,
+      "totalLtv": 256.47
+    }
+  ],
+  "engagement": [
+    {
+      "level": "Casual",
+      "count": 16091
+    },
+    {
+      "level": "Hardcore",
+      "count": 6749
+    },
+    {
+      "level": "Light",
+      "count": 8674
+    },
+    {
+      "level": "Regular",
+      "count": 16127
+    },
+    {
+      "level": "Trial",
+      "count": 2359
+    }
+  ],
+  "monetization": [
+    {
+      "tier": "Dolphin",
+      "count": 1790,
+      "revenue": 540940.05
+    },
+    {
+      "tier": "Free",
+      "count": 20157,
+      "revenue": 0.0
+    },
+    {
+      "tier": "Light Spender",
+      "count": 24014,
+      "revenue": 76684.92
+    },
+    {
+      "tier": "Minnow",
+      "count": 3550,
+      "revenue": 134505.51
+    },
+    {
+      "tier": "Whale",
+      "count": 489,
+      "revenue": 1339845.08
+    }
+  ],
+  "rfm": [
+    {
+      "segment": "About to Sleep",
+      "count": 7993,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Champions",
+      "count": 5949,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Hibernating",
+      "count": 5454,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Developing",
+      "count": 4105,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Promising",
+      "count": 3818,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Developing",
+      "count": 2818,
+      "priority": "High"
+    },
+    {
+      "segment": "About to Sleep",
+      "count": 2754,
+      "priority": "High"
+    },
+    {
+      "segment": "Potential Loyalists",
+      "count": 2687,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Lost Whales",
+      "count": 2574,
+      "priority": "Critical"
+    },
+    {
+      "segment": "Loyal Players",
+      "count": 2446,
+      "priority": "Medium"
+    },
+    {
+      "segment": "Recent Users",
+      "count": 2214,
+      "priority": "Medium"
+    },
+    {
+      "segment": "At Risk",
+      "count": 1801,
+      "priority": "High"
+    },
+    {
+      "segment": "Loyal Players",
+      "count": 1520,
+      "priority": "Standard"
+    },
+    {
+      "segment": "Developing",
+      "count": 1366,
+      "priority": "Medium"
+    },
+    {
+      "segment": "At Risk",
+      "count": 1361,
+      "priority": "Critical"
+    },
+    {
+      "segment": "Cant Lose Them",
+      "count": 1140,
+      "priority": "Critical"
+    }
+  ],
+  "platforms": [
+    {
+      "platform": "Console",
+      "count": 9889,
+      "avgLtv": 43.39
+    },
+    {
+      "platform": "Mobile",
+      "count": 22702,
+      "avgLtv": 41.61
+    },
+    {
+      "platform": "PC",
+      "count": 17409,
+      "avgLtv": 41.26
+    }
+  ],
+  "kpi": {
+    "totalPlayers": 50000,
+    "activePlayers": 18236,
+    "totalRevenue": 2091975.56,
+    "avgLtv": 41.84,
+    "avgPlaytime": 55.3
+  },
+  "generatedAt": "2026-02-02T21:01:36.709829"
+}

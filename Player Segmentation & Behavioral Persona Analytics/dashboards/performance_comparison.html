@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Segmentation - Performance Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a35;
+            --bg-card: #252548;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #06b6d4;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            height: 350px;
+        }
+
+        .chart-container.large {
+            height: 450px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comparison-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .metric-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .quadrant-insights {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quadrant {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quadrant.high-high {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .quadrant.high-low {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .quadrant.low-high {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        .quadrant.low-low {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .quadrant h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quadrant p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .quadrant .personas {
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <header class="header">
+            <h1>📊 Performance Comparison</h1>
+        </header>
+
+        <nav class="nav-tabs">
+            <a href="segment_overview.html" class="nav-tab">Overview</a>
+            <a href="persona_deepdive.html" class="nav-tab">Persona Deep-Dive</a>
+            <a href="performance_comparison.html" class="nav-tab active">Performance</a>
+        </nav>
+
+        <div class="charts-grid">
+            <div class="chart-card full-width">
+                <h3 class="chart-title">🎯 Segment Strategy Matrix (Engagement vs Monetization)</h3>
+                <div class="chart-container large">
+                    <canvas id="strategyMatrix"></canvas>
+                </div>
+                <div class="quadrant-insights">
+                    <div class="quadrant high-high">
+                        <h4>💎 High Engagement + High Value</h4>
+                        <p>VIP treatment, retention focus</p>
+                        <div class="personas" id="hhPersonas">Loading...</div>
+                    </div>
+                    <div class="quadrant high-low">
+                        <h4>🎮 High Engagement + Low Value</h4>
+                        <p>Conversion opportunities</p>
+                        <div class="personas" id="hlPersonas">Loading...</div>
+                    </div>
+                    <div class="quadrant low-high">
+                        <h4>💰 Low Engagement + High Value</h4>
+                        <p>Re-engagement campaigns</p>
+                        <div class="personas" id="lhPersonas">Loading...</div>
+                    </div>
+                    <div class="quadrant low-low">
+                        <h4>📈 Low Engagement + Low Value</h4>
+                        <p>Improve onboarding</p>
+                        <div class="personas" id="llPersonas">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">🏆 Revenue Contribution by Persona</h3>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">⚡ Multi-Metric Radar Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card full-width">
+                <h3 class="chart-title">📋 Persona Performance Matrix</h3>
+                <div class="table-container">
+                    <table class="comparison-table" id="performanceTable">
+                        <thead>
+                            <tr>
+                                <th>Persona</th>
+                                <th>Population</th>
+                                <th>Avg LTV</th>
+                                <th>Playtime</th>
+                                <th>Session</th>
+                                <th>PvP %</th>
+                                <th>Social</th>
+                                <th>LTV Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Player Segmentation & Behavioral Persona Analytics</p>
+        </footer>
+    </div>
+
+    <script>
+        const COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#6366f1', '#a855f7'];
+
+        async function loadData() {
+            try {
+                const response = await fetch('assets/performance_comparison.json');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return null;
+            }
+        }
+
+        function renderStrategyMatrix(personas) {
+            const ctx = document.getElementById('strategyMatrix').getContext('2d');
+
+            // Normalize for bubble chart
+            const maxLtv = Math.max(...personas.map(p => p.ltv));
+            const maxPlaytime = Math.max(...personas.map(p => p.playtime));
+            const maxPop = Math.max(...personas.map(p => p.population));
+
+            new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: personas.map((p, i) => ({
+                        label: p.name,
+                        data: [{
+                            x: p.playtime,
+                            y: p.ltv,
+                            r: Math.max(5, (p.population / maxPop) * 40)
+                        }],
+                        backgroundColor: COLORS[i % COLORS.length] + '80',
+                        borderColor: COLORS[i % COLORS.length],
+                        borderWidth: 2
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Avg Playtime (hours)', color: '#a1a1aa' },
+                            ticks: { color: '#71717a' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Avg LTV ($)', color: '#a1a1aa' },
+                            ticks: { color: '#71717a', callback: v => '$' + v },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#a1a1aa', usePointStyle: true }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const p = personas[ctx.datasetIndex];
+                                    return [
+                                        `${p.name}`,
+                                        `Population: ${p.population.toLocaleString()}`,
+                                        `Avg LTV: $${p.ltv}`,
+                                        `Playtime: ${p.playtime}h`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Categorize personas into quadrants
+            const medianPlaytime = personas.map(p => p.playtime).sort((a, b) => a - b)[Math.floor(personas.length / 2)];
+            const medianLtv = personas.map(p => p.ltv).sort((a, b) => a - b)[Math.floor(personas.length / 2)];
+
+            const hh = personas.filter(p => p.playtime >= medianPlaytime && p.ltv >= medianLtv).map(p => p.name.split(' ')[0]);
+            const hl = personas.filter(p => p.playtime >= medianPlaytime && p.ltv < medianLtv).map(p => p.name.split(' ')[0]);
+            const lh = personas.filter(p => p.playtime < medianPlaytime && p.ltv >= medianLtv).map(p => p.name.split(' ')[0]);
+            const ll = personas.filter(p => p.playtime < medianPlaytime && p.ltv < medianLtv).map(p => p.name.split(' ')[0]);
+
+            document.getElementById('hhPersonas').textContent = hh.join(', ') || 'None';
+            document.getElementById('hlPersonas').textContent = hl.join(', ') || 'None';
+            document.getElementById('lhPersonas').textContent = lh.join(', ') || 'None';
+            document.getElementById('llPersonas').textContent = ll.join(', ') || 'None';
+        }
+
+        function renderRevenueChart(revenue) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            const total = revenue.reduce((s, r) => s + r.revenue, 0);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: revenue.map(r => r.persona),
+                    datasets: [{
+                        data: revenue.map(r => r.revenue),
+                        backgroundColor: COLORS,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#a1a1aa', font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const pct = ((ctx.raw / total) * 100).toFixed(1);
+                                    return `$${ctx.raw.toLocaleString()} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRadarChart(personas) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+
+            // Normalize metrics
+            const maxValues = {
+                playtime: Math.max(...personas.map(p => p.playtime)),
+                ltv: Math.max(...personas.map(p => p.ltv)),
+                session: Math.max(...personas.map(p => p.session)),
+                pvp: 100,
+                social: Math.max(...personas.map(p => p.social))
+            };
+
+            // Show top 4 personas for clarity
+            const topPersonas = personas.slice(0, 4);
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Playtime', 'Spending', 'Session', 'PvP Focus', 'Social'],
+                    datasets: topPersonas.map((p, i) => ({
+                        label: p.name.split(' ')[0],
+                        data: [
+                            (p.playtime / maxValues.playtime) * 100,
+                            (p.ltv / maxValues.ltv) * 100,
+                            (p.session / maxValues.session) * 100,
+                            p.pvp,
+                            (p.social / maxValues.social) * 100
+                        ],
+                        backgroundColor: COLORS[i] + '20',
+                        borderColor: COLORS[i],
+                        borderWidth: 2,
+                        pointBackgroundColor: COLORS[i]
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#71717a', backdropColor: 'transparent' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#a1a1aa', font: { size: 11 } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#a1a1aa', usePointStyle: true }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(personas) {
+            const tbody = document.getElementById('tableBody');
+            const maxLtv = Math.max(...personas.map(p => p.ltv));
+
+            tbody.innerHTML = personas.map((p, i) => `
+                <tr>
+                    <td><strong style="color: ${COLORS[i]}">${p.name}</strong></td>
+                    <td>${p.population.toLocaleString()}</td>
+                    <td>$${p.ltv}</td>
+                    <td>${p.playtime}h</td>
+                    <td>${p.session}m</td>
+                    <td>${p.pvp}%</td>
+                    <td>${p.social}</td>
+                    <td>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill" style="width: ${(p.ltv / maxLtv) * 100}%; background: ${COLORS[i]}"></div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function init() {
+            const data = await loadData();
+            if (!data) return;
+
+            renderStrategyMatrix(data.personas);
+            renderRevenueChart(data.revenue);
+            renderRadarChart(data.personas);
+            renderTable(data.personas);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

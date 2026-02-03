@@ -1,0 +1,320 @@
+{
+  "personas": {
+    "Casual Casey": {
+      "population": 15566,
+      "avgPlaytime": 14.5,
+      "avgLtv": 2.48,
+      "avgSession": 21.4,
+      "pvpPct": 25.3,
+      "socialScore": 0.48,
+      "totalRevenue": 38654.81,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 1235
+        },
+        {
+          "platform": "Mobile",
+          "count": 12105
+        },
+        {
+          "platform": "PC",
+          "count": 2226
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Solo",
+          "count": 134530
+        },
+        {
+          "mode": "PvE",
+          "count": 108180
+        },
+        {
+          "mode": "Co-op",
+          "count": 69562
+        },
+        {
+          "mode": "PvP",
+          "count": 56025
+        },
+        {
+          "mode": "Ranked",
+          "count": 42713
+        }
+      ]
+    },
+    "Competitive Carl": {
+      "population": 12920,
+      "avgPlaytime": 123.2,
+      "avgLtv": 9.43,
+      "avgSession": 56.0,
+      "pvpPct": 52.0,
+      "socialScore": 1.9,
+      "totalRevenue": 121850.18,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 2471
+        },
+        {
+          "platform": "Mobile",
+          "count": 5910
+        },
+        {
+          "platform": "PC",
+          "count": 4539
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Ranked",
+          "count": 344081
+        },
+        {
+          "mode": "PvP",
+          "count": 284953
+        },
+        {
+          "mode": "Solo",
+          "count": 165836
+        },
+        {
+          "mode": "Co-op",
+          "count": 165796
+        },
+        {
+          "mode": "PvE",
+          "count": 165026
+        }
+      ]
+    },
+    "Explorer Emma": {
+      "population": 18967,
+      "avgPlaytime": 29.7,
+      "avgLtv": 3.25,
+      "avgSession": 28.7,
+      "pvpPct": 28.9,
+      "socialScore": 0.82,
+      "totalRevenue": 61563.8,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 5665
+        },
+        {
+          "platform": "Mobile",
+          "count": 3535
+        },
+        {
+          "platform": "PC",
+          "count": 9767
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Solo",
+          "count": 219716
+        },
+        {
+          "mode": "PvE",
+          "count": 192998
+        },
+        {
+          "mode": "Co-op",
+          "count": 153029
+        },
+        {
+          "mode": "PvP",
+          "count": 138312
+        },
+        {
+          "mode": "Ranked",
+          "count": 125488
+        }
+      ]
+    },
+    "Collector Chris": {
+      "population": 516,
+      "avgPlaytime": 93.2,
+      "avgLtv": 84.19,
+      "avgSession": 33.4,
+      "pvpPct": 37.2,
+      "socialScore": 3.54,
+      "totalRevenue": 43441.22,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 117
+        },
+        {
+          "platform": "Mobile",
+          "count": 225
+        },
+        {
+          "platform": "PC",
+          "count": 174
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Solo",
+          "count": 11398
+        },
+        {
+          "mode": "PvE",
+          "count": 11189
+        },
+        {
+          "mode": "Co-op",
+          "count": 10853
+        },
+        {
+          "mode": "PvP",
+          "count": 10545
+        },
+        {
+          "mode": "Ranked",
+          "count": 10230
+        }
+      ]
+    },
+    "Whale Walter": {
+      "population": 1816,
+      "avgPlaytime": 172.8,
+      "avgLtv": 997.82,
+      "avgSession": 56.7,
+      "pvpPct": 48.2,
+      "socialScore": 5.37,
+      "totalRevenue": 1812035.43,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 351
+        },
+        {
+          "platform": "Mobile",
+          "count": 840
+        },
+        {
+          "platform": "PC",
+          "count": 625
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Ranked",
+          "count": 57243
+        },
+        {
+          "mode": "PvP",
+          "count": 50035
+        },
+        {
+          "mode": "PvE",
+          "count": 35353
+        },
+        {
+          "mode": "Co-op",
+          "count": 35189
+        },
+        {
+          "mode": "Solo",
+          "count": 34701
+        }
+      ]
+    },
+    "Social Sara": {
+      "population": 134,
+      "avgPlaytime": 122.0,
+      "avgLtv": 105.77,
+      "avgSession": 44.0,
+      "pvpPct": 37.7,
+      "socialScore": 5.87,
+      "totalRevenue": 14173.65,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 27
+        },
+        {
+          "platform": "Mobile",
+          "count": 53
+        },
+        {
+          "platform": "PC",
+          "count": 54
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Co-op",
+          "count": 2412
+        },
+        {
+          "mode": "Solo",
+          "count": 2379
+        },
+        {
+          "mode": "Ranked",
+          "count": 2319
+        },
+        {
+          "mode": "PvE",
+          "count": 2310
+        },
+        {
+          "mode": "PvP",
+          "count": 2298
+        }
+      ]
+    },
+    "Weekend Warrior Will": {
+      "population": 81,
+      "avgPlaytime": 55.5,
+      "avgLtv": 3.17,
+      "avgSession": 51.2,
+      "pvpPct": 31.4,
+      "socialScore": 1.49,
+      "totalRevenue": 256.47,
+      "platforms": [
+        {
+          "platform": "Console",
+          "count": 23
+        },
+        {
+          "platform": "Mobile",
+          "count": 34
+        },
+        {
+          "platform": "PC",
+          "count": 24
+        }
+      ],
+      "gameModes": [
+        {
+          "mode": "Solo",
+          "count": 200
+        },
+        {
+          "mode": "PvE",
+          "count": 198
+        },
+        {
+          "mode": "Co-op",
+          "count": 176
+        },
+        {
+          "mode": "Ranked",
+          "count": 169
+        },
+        {
+          "mode": "PvP",
+          "count": 160
+        }
+      ]
+    }
+  },
+  "generatedAt": "2026-02-02T21:04:10.918045"
+}
